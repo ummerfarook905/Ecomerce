@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>Update Product</h1>
+    
+    <form th:action="@{/super-admin/update-products/{id}(id=${product.id})}" th:object="${product}" method="post">
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" name="name" value="*{name}" required>
+        
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" value="*{description}" >
+        
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" value="*{price}" >
+        
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" value="*{quantity}" >
+        
+        <label>Image:</label>
+        <input type="url" id="image" name="image" value="*{image}" >
+        
+        <button type="submit">Update Product</button>
+    </form>
+
+    <div>
+        <a th:href="@{/super-admin/view-products}">Back to products</a>
+    </div>
+    
+</body>
+</html>

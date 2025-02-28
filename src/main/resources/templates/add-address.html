@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Address</title>
+</head>
+<body>
+    <h1>Add Address</h1>
+    <form th:action="@{/add-address}" th:object="${address}" method="post">
+        <label for="street">Street:</label>
+        <input type="text" id="street" th:field="*{street}" />
+
+        <label for="city">City:</label>
+        <input type="text" id="city" th:field="*{city}" />
+
+        <label for="state">State:</label>
+        <input type="text" id="state" th:field="*{state}" />
+
+        <label for="country">Country:</label>
+        <input type="text" id="country" th:field="*{country}" />
+
+        <label for="zipCode">Zip Code:</label>
+        <input type="text" id="zipCode" th:field="*{zipCode}" />
+
+        <button type="submit">Add Address</button>
+    </form>
+    
+</body>
+</html>

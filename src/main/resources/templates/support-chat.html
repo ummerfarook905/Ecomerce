@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/dist/stomp.min.js"></script>
+</head>
+<body>
+
+    <h1>Support Chat</h1>
+
+<div id="chatMessages"></div>
+
+<input type="text" id="message" placeholder="Type your message">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    var stompClient = null;
+
+    // Establish connection
+    function connect() {
+        var socket = new SockJS('/chat'); // Connect to WebSocket endpoint
+        stompClient = Stomp.over(socket);
+        
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/messages', function(messageOutput) {
+                showMessage(JSON.parse(messageOutput.body)); // Handle incoming messages
+            });
+        });
+    }
+
+    // Send message to the server
+    function sendMessage() {
+        var message = document.getElementById('message').value;
+        stompClient.send("/app/chat", {}, JSON.stringify({'messageContent': message, 'senderId': 1, 'messageType': 'USER'}));
+        document.getElementById('message').value = ''; // Clear input
+    }
+
+    // Show messages in the UI
+    function showMessage(message) {
+        var messageElement = document.createElement('div');
+        messageElement.textContent = message.messageContent;
+        document.getElementById('chatMessages').appendChild(messageElement);
+    }
+
+    // Start WebSocket connection when page loads
+    connect();
+</script>
+    
+</body>
+</html>
