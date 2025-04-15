@@ -1,5 +1,7 @@
 package com.example.aquafin.configurations;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.aquafin.services.CustomSuccessHandler;
 import com.example.aquafin.services.CustomUserDetailsService;
@@ -34,7 +39,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(c -> c.disable())
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/ws/","api/chat/"))
+
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
     
         .authorizeHttpRequests(request -> request
                 .requestMatchers("/super-admin").hasAuthority("SUPER_ADMIN")  
@@ -67,6 +74,20 @@ public class SecurityConfig {
                 .expiredUrl("/login?expired")  
             );
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/", corsConfiguration);
+            return source;
     }
 
     @Autowired

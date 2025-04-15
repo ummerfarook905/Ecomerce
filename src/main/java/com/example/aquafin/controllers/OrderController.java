@@ -16,11 +16,14 @@ import com.example.aquafin.models.ConfirmOrder;
 import com.example.aquafin.models.Order;
 import com.example.aquafin.repositories.ConfirmOrderRepository;
 import com.example.aquafin.services.ConfirmOrderService;
+import com.example.aquafin.services.EmailService;
 import com.example.aquafin.services.OrderService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+
+import jakarta.mail.MessagingException;
 
 @Controller
 public class OrderController {
@@ -33,6 +36,9 @@ public class OrderController {
 
     @Autowired
     private ConfirmOrderRepository confirmOrderRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     // @Autowired
     // ProductService productService;
@@ -139,14 +145,22 @@ public String payForOrder(
             RedirectAttributes redirectAttributes) {
         try {
 
-            String email = principal.getName();
+            String email = principal.getName(); 
+            // List<Order> orders = orderService.getOrdersByEmail(email); 
+
+            emailService.sendOrderConfirmationEmail(email);
+        
+            // for (Order order : orders) {
+            
+            // }
+
             confirmOrderService.createConfirmOrdersFromCart(email);
             redirectAttributes.addFlashAttribute("success", 
                     "Payment successful! Your order has been confirmed.");
                 return "redirect:/order-confirmation";
 
 
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             redirectAttributes.addFlashAttribute("error", 
                 "Error processing payment confirmation: " + e.getMessage());
             return "redirect:/user-cart";
